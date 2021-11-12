@@ -14,7 +14,7 @@ class PlayScene extends Phaser.Scene {
         // skapa en tilemap från JSON filen vi preloadade
         const map = this.make.tilemap({ key: 'map' });
         // ladda in tilesetbilden till vår tilemap
-        const tileset = map.addTilesetImage('jefrens_platformer', 'tiles');
+        const tileset = map.addTilesetImage('jefrens_tilesheet', 'tiles');
 
         // initiera animationer, detta är flyttat till en egen metod
         // för att göra create metoden mindre rörig
@@ -26,7 +26,7 @@ class PlayScene extends Phaser.Scene {
         // Ladda lagret Platforms från tilemappen
         // och skapa dessa
         // sätt collisionen
-        this.platforms = map.createLayer('Platforms', tileset);
+        this.platforms = map.createLayer('platform', tileset);
         this.platforms.setCollisionByExclusion(-1, true);
         // platforms.setCollisionByProperty({ collides: true });
         // this.platforms.setCollisionFromCollisionGroup(
@@ -36,13 +36,13 @@ class PlayScene extends Phaser.Scene {
         // );
         // platforms.setCollision(1, true, true);
 
-        // skapa en spelare och ge den studs
-        this.player = this.physics.add.sprite(50, 300, 'player');
-        this.player.setBounce(0.1);
+        // skapa en spelare och ge den 0 studs
+        this.player = this.physics.add.sprite(50, 300, 'dude');
+        this.player.setBounce(0);
         this.player.setCollideWorldBounds(true);
 
         // skapa en fysik-grupp
-        this.spikes = this.physics.add.group({
+        /*this.spikes = this.physics.add.group({
             allowGravity: false,
             immovable: true
         });
@@ -65,11 +65,11 @@ class PlayScene extends Phaser.Scene {
         // om en kollision sker, kör callback metoden playerHit
         this.physics.add.collider(
             this.player,
-            this.spikes,
+            this.spikes, 
             this.playerHit,
             null,
             this
-        );
+        ); */
 
         // krocka med platforms lagret
         this.physics.add.collider(this.player, this.platforms);
@@ -171,27 +171,10 @@ class PlayScene extends Phaser.Scene {
     }
 
     // när vi skapar scenen så körs initAnims för att ladda spelarens animationer
-    initAnims() {
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNames('player', {
-                prefix: 'jefrens_',
-                start: 1,
-                end: 4
-            }),
-            frameRate: 10,
-            repeat: -1
-        });
-
+    initAnims() {   
         this.anims.create({
             key: 'idle',
-            frames: [{ key: 'player', frame: 'jefrens_2' }],
-            frameRate: 10
-        });
-
-        this.anims.create({
-            key: 'jump',
-            frames: [{ key: 'player', frame: 'jefrens_5' }],
+            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
             frameRate: 10
         });
     }
