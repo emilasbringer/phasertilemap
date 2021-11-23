@@ -3,15 +3,43 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
 nav, footer {
     width: 800px;
-    padding: 1rem 0;
+    padding: 0rem 0;
 }
 
 canvas {
     display: block;
     margin: 0 auto;
+    z-index: 0;
 }
+
+#game {
+    z-index: -2;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+    background: rgba(207, 207, 207, 0.274);
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #d1d1d123; 
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(136, 136, 136, 0.11); 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(160, 160, 160); 
+  }

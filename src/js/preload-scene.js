@@ -8,6 +8,7 @@ class PreloadScene extends Phaser.Scene {
         this.load.setBaseURL('/assets');
         this.load.image('background', '/images/background.png');
         this.load.image('spike', '/images/spike.png');
+        this.load.image('mountain', '/images/mountain.png');
         this.load.atlas(
             'player',
             '/images/jefrens_hero.png',
@@ -18,10 +19,14 @@ class PreloadScene extends Phaser.Scene {
             '/images/jefrens_foe.png',
             '/images/jefrens_foe.json'
         );
-        this.load.spritesheet('dude', 'assets/adventurer-Sheet.png', 50, 37, 72);
+        this.load.atlas(
+            'dude',
+            '/images/texture.png',
+            '/images/texture.json'
+        );
         this.load.image('tiles', '/tilesets/jefrens_tilesheet.png');
         // här laddar vi in en tilemap med spelets "karta"
-        this.load.tilemapTiledJSON('map', '/tilemaps/test2.json');
+        this.load.tilemapTiledJSON('map', '/tilemaps/megamap.json');
     }
 
     create() {

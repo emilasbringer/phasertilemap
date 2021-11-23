@@ -21,6 +21,7 @@ class PreloadScene extends Phaser.Scene {
             fixedWidth: this.game.config.width,
             fixedHeight: this.game.config.height,
         });
+        console.log("bing bang boom" + dude);
     }
 
     // scenens uppdate metod, lyssnar på keyDown
