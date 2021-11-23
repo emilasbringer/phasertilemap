@@ -4,13 +4,13 @@ class PlayScene extends Phaser.Scene {
     }
 
     create() {
-        // variabel för att hålla koll på hur många gånger vi spikat oss själva
         this.spiked = 0;
         this.velocity = 0;
         this.stridePower = 250;
         this.groundFriction = 0.7;
         this.maxSpeed = 200;
         this.fortitude = 5;
+        this.coldLevelFactor = 1;
         this.coldLevel = 100;
         this.maxColdLevel = 100;
         this.jumpPower = 400;
@@ -54,6 +54,7 @@ class PlayScene extends Phaser.Scene {
                     this.zeunertsAmmountBank += this.zeunertsAmmountGain;
                     console.log("Gained " + this.zeunertsAmmountGain + " flasks of zeunerts this round. Your total Zeunerts is now " + this.zeunertsAmmountBank);
                     this.zeunertsAmmountGain = 0;
+                    this.updateText();
                 }
             }
             else if (this.inColdZone && this.deathtimer >= 2) {
@@ -64,14 +65,10 @@ class PlayScene extends Phaser.Scene {
             else if (!this.inColdZone) {
                 console.log("In warm zone");
             }
+            this.coldLevelFactor = this.coldLevel/100;
         }, 100);
 
         
-
-        // ladda spelets bakgrundsbild, statisk
-        // setOrigin behöver användas för att den ska ritas från top left
-        //this.add.image(0, 0, 'background').setOrigin(0, 0);
-
         // skapa en tilemap från JSON filen vi preloadade
         const map = this.make.tilemap({ key: 'map' });
         // ladda in tilesetbilden till vår tilemap
@@ -104,12 +101,22 @@ class PlayScene extends Phaser.Scene {
         // platforms.setCollision(1, true, true);
 
         // skapa en spelare och ge den 0 studs
-        this.player = this.physics.add.sprite(800, 300, 'dude');
+        this.player = this.physics.add.sprite(600, 300, 'dude');
         this.player.setBounce(0).setScale(1.75);
         this.player.setCollideWorldBounds(true);
         this.player.setSize(32, 36, 50, 100);
         this.cameras.main.x = -this.player.x + 700;
 
+        this.menu = this.add.rectangle(0, 640, window.innerWidth, 80, 0x000000);
+        this.menu.setOrigin(0,0);
+        this.healthbarContainer = this.add.rectangle(10, 695, 300, 20, 0xfffffff);
+        this.healthbarContainer.setStrokeStyle(2, 0xfffffff)
+        this.healthbarContainer.setOrigin(0,0.5);
+        this.healthbar = this.add.rectangle(11, 695, 298, 18, 0x4dafff);
+        this.healthbar.setOrigin(0,0.5);
+        
+        this.dangerBorder = this.add.rectangle(1000, 526, 10, 50, 0x166df7);
+        this.dangerBorder.setOrigin(0,0);
         // skapa en fysik-grupp
         /*this.spikes = this.physics.add.group({
             allowGravity: false,
@@ -166,15 +173,25 @@ class PlayScene extends Phaser.Scene {
 
     // play scenens update metod
     update() {
-        if (this.player.x > 696 && this.player.x < 9800) {
+        if (this.player.x > 700 && this.player.x < 9800) {
             this.cameras.main.x = -this.player.x + 700;
-            this.middleBackground.x = this.player.x * 0.9 - 700;
-            this.deepMiddleBackground.x = this.player.x * 0.95 - 750;
+            this.middleBackground.x = this.player.x * 0.9 - 630;
+            this.deepMiddleBackground.x = this.player.x * 0.95 - 665;
+            this.healthbarContainer.x = this.player.x - 491;
+            this.healthbar.x = this.player.x - 490;
+            this.menu.x = this.player.x - 700;
         }
         else if (this.player.x < 696) {
             this.cameras.main.x = 0;
+            this.middleBackground.x = 0;
+            this.deepMiddleBackground.x = 0;
+            this.healthbarContainer.x = 209;
+            this.healthbar.x = 210;
+            this.menu.x = 0;
         }
         
+
+        this.healthbar.width = this.coldLevelFactor * 298;
 
         // för pause
         if (this.keyObj.isDown) {
@@ -240,8 +257,9 @@ class PlayScene extends Phaser.Scene {
     // metoden updateText för att uppdatera overlaytexten i spelet
     updateText() {
         this.text.setText(
-            `Arrow keys to move. Space to jump. W to pause. Spiked: ${this.spiked}`
+            `Spam Right-Arrow to reach the Zeunerts factory. Space to jump. W to pause. Zeunerts: ${this.zeunertsAmmountBank}`
         );
+        
     }
 
     // när spelaren landar på en spik, då körs följande metod
@@ -324,6 +342,15 @@ class PlayScene extends Phaser.Scene {
         });
     }
     
+}
+
+function returnToBase() {
+var interval = setInterval(() => {
+        if (player.x > 300) {
+            player.x -= 10;
+        }
+        else clearInterval(interval);
+    }, 1);
 }
 
 export default PlayScene;
