@@ -31,6 +31,8 @@ class PlayScene extends Phaser.Scene {
         this.groundFrictionCost = 10;
         this.maxSpeedCost = 10;
         this.fortitudeCost = 50;
+        this.plopp = 0;
+        this.timedEvent = this.time.addEvent({ delay: 500, callback: this.updateCounter, callbackScope: this, loop: true });
 
         setInterval(() => {
             this.velocity = this.groundFriction * this.velocity;
@@ -74,7 +76,6 @@ class PlayScene extends Phaser.Scene {
                 this.distanceTraveled = this.player.x - 1000;
                 this.zeunertsAmmountGain = Math.floor(this.distanceTraveled/100);
                 this.coldLevel -= this.fortitude;
-                this.player.tint = this.coldLevelFactor*1000 * 0x0000ff;
                 console.log(this.coldLevel + " zeunerts = " + this.zeunertsAmmountGain );
             }
             else if (!this.inColdZone) {
@@ -592,7 +593,10 @@ class PlayScene extends Phaser.Scene {
             repeat: 1
         });
     }
-    
+    updateCounter() {
+        this.plopp++;
+        console.log(this.plopp);
+    }
 }
 
 export default PlayScene;
