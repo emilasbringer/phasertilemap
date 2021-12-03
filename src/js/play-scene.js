@@ -24,15 +24,18 @@ class PlayScene extends Phaser.Scene {
         this.deathtimer = 2;
         this.allowDeath = true;
         this.distanceTraveled = 0;
-        this.zeunertsAmmountBank = 101;
+        this.zeunertsAmmountBank = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
         this.zeunertsAmmountGain = 0;
+        this.zeunertsTotalGainHigh = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
 
         this.stridePowerCost = 10;
         this.groundFrictionCost = 10;
         this.maxSpeedCost = 10;
         this.fortitudeCost = 50;
-        this.plopp = 0;
         this.timedEvent = this.time.addEvent({ delay: 500, callback: this.updateCounter, callbackScope: this, loop: true });
+        this.themeMusic = this.sound.add("sickoMusic");
+        this.themeMusic.play();
+        this.dashEffect = this.sound.add('skiDash', {volume: 0.8});
 
         setInterval(() => {
             this.velocity = this.groundFriction * this.velocity;
@@ -63,6 +66,8 @@ class PlayScene extends Phaser.Scene {
                     this.coldLevel = this.maxColdLevel;
                     this.allowDeath = true;
                     this.zeunertsAmmountBank += this.zeunertsAmmountGain;
+                    this.zeunertsTotalGainHigh += this.zeunertsAmmountGain
+                    localStorage.setItem("ZeunertsBank", this.zeunertsTotalGainHigh);
                     console.log("Gained " + this.zeunertsAmmountGain + " flasks of zeunerts this round. Your total Zeunerts is now " + this.zeunertsAmmountBank);
                     this.zeunertsAmmountGain = 0;
                     if (this.zeunertsAmmountBank >= this.stridePowerCost) {this.stridePowerButton.setFrame(0);}
@@ -79,7 +84,7 @@ class PlayScene extends Phaser.Scene {
                 console.log(this.coldLevel + " zeunerts = " + this.zeunertsAmmountGain );
             }
             else if (!this.inColdZone) {
-                console.log("In warm zone");
+                //console.log("In warm zone");
             }
             this.coldLevelFactor = this.coldLevel/100;
         }, 100);
@@ -117,6 +122,8 @@ class PlayScene extends Phaser.Scene {
         this.middleBackground = map.createLayer('middle', tileset).setDepth(-8);
         this.deepMiddleBackground = map.createLayer('deepmiddle', tileset).setDepth(-9);
         this.background = map.createLayer('background', tileset).setDepth(-10);
+
+        this.mountain = this.add.sprite(1500, 494, 'mountain');
         
         // platforms.setCollisionByProperty({ collides: true });
         // this.platforms.setCollisionFromCollisionGroup(
@@ -131,6 +138,9 @@ class PlayScene extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
         this.player.setSize(32, 36, 50, 100);
         this.cameras.main.x = -this.player.x + 700;
+
+        this.vendor = this.physics.add.sprite(100, 300, 'vendor')
+        this.vendor.setScale(3).setSize(32, 32, 100, 100).setDepth(-1);
 
         //Rectangles
         this.dangerBorder = this.add.rectangle(1000, 526, 10, 50, 0x166df7);
@@ -197,7 +207,9 @@ class PlayScene extends Phaser.Scene {
         ); */
 
         // krocka med platforms lagret
+        this.physics.add.collider(this.vendor, this.platforms);
         this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.overlap(this.player, this.vendor, this.touchingVendor());
 
         // skapa text på spelet, texten är tom
         // textens innehåll sätts med updateText() metoden
@@ -207,6 +219,8 @@ class PlayScene extends Phaser.Scene {
         });
         this.text.setScrollFactor(0);
         this.updateText();
+        console.log("Cant refresh buttons because i am trash programmer. Updating buttons with ZeunertsBank = " + this.zeunertsAmmountBank);
+        this.updateButtons();
 
         // lägg till en keyboard input för W
         this.keyObj = this.input.keyboard.addKey('W', true, false);
@@ -222,10 +236,12 @@ class PlayScene extends Phaser.Scene {
 
     // play scenens update metod
     update() {
+        {
+        // UI //
         if (this.player.x > 700 && this.player.x < 19800) {
             this.cameras.main.x = -this.player.x + 700;
-            this.middleBackground.x = this.player.x * 0.9 - 630;
-            this.deepMiddleBackground.x = this.player.x * 0.95 - 665;
+            this.middleBackground.x = this.player.x * 0.5 - 350;
+            this.deepMiddleBackground.x = this.player.x * 0.7 - 490;
             this.menu.x = this.player.x - 700;
             this.healthbarContainer.x = this.player.x - 491;
             this.healthbar.x = this.player.x - 490;
@@ -270,7 +286,6 @@ class PlayScene extends Phaser.Scene {
             this.groundFrictionText.x = 660;
             this.maxSpeedText.x = 748;
             this.fortitudeText.x = 845; 
-
             this.stridePowerTextCost.x = 582;
             this.groundFrictionTextCost.x = 682;
             this.maxSpeedTextCost.x = 782;
@@ -286,7 +301,10 @@ class PlayScene extends Phaser.Scene {
             
         }
         this.healthbar.width = this.coldLevelFactor * 298;
+        this.vendor.play('vendorIdle', true);
+    }
 
+{
         // StridePower //
         //On Pointer Out
         this.stridePowerButton.on('pointerout',function(){
@@ -390,9 +408,8 @@ class PlayScene extends Phaser.Scene {
         this.fortitudeButton.on('pointerup',function() {
                 gameObject.isClicking = false;
         });
-        
+}    
             
-        
 
         // för pause
         if (this.keyObj.isDown) {
@@ -407,6 +424,7 @@ class PlayScene extends Phaser.Scene {
         if (this.cursors.left.isDown && this.tapAllowed && (this.coldLevel >= 1)) {
             this.velocity -= this.stridePower;
             this.tapAllowed = false;
+            this.dashEffect.play();
             if (this.player.body.onFloor()) {
                 this.player.play('walk', true);
             }
@@ -414,6 +432,7 @@ class PlayScene extends Phaser.Scene {
         if (this.cursors.right.isDown && this.tapAllowed && (this.coldLevel >= 1)) {
             this.velocity += this.stridePower;
             this.tapAllowed = false;
+            this.dashEffect.play();
             if (this.player.body.onFloor()) {
                 this.player.play('walk', true);
             }
@@ -514,6 +533,10 @@ class PlayScene extends Phaser.Scene {
         )
     }
 
+    touchingVendor() {
+        console.log("Currently harrasing vendor");
+    }
+
     // när spelaren landar på en spik, då körs följande metod
     playerHit(player, spike) {
         this.spiked++;
@@ -592,11 +615,25 @@ class PlayScene extends Phaser.Scene {
             frameRate: 40,
             repeat: 1
         });
+        this.anims.create({
+            key: 'vendorIdle',
+            frames: this.anims.generateFrameNames('vendor', {
+                start: 0,
+                end: 3,
+                zeroPad: 3,
+                prefix: 'tile'
+            }),
+            frameRate: 3,
+            repeat: 1
+        });
     }
     updateCounter() {
-        this.plopp++;
-        console.log(this.plopp);
+        console.log("Timer tick");
     }
+}
+
+function touchingMountain() {
+    console.log("touching a piss head mountain");
 }
 
 export default PlayScene;
