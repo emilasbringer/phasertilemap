@@ -23,6 +23,7 @@ class PlayScene extends Phaser.Scene {
         this.reset = false;
         this.deathtimer = 2;
         this.allowDeath = true;
+        this.allowShop = false;
         this.distanceTraveled = 0;
         this.zeunertsAmmountBank = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
         this.zeunertsAmmountGain = 0;
@@ -304,7 +305,7 @@ class PlayScene extends Phaser.Scene {
         this.vendor.play('vendorIdle', true);
     }
 
-{
+        {
         // StridePower //
         //On Pointer Out
         this.stridePowerButton.on('pointerout',function(){
@@ -408,9 +409,16 @@ class PlayScene extends Phaser.Scene {
         this.fortitudeButton.on('pointerup',function() {
                 gameObject.isClicking = false;
         });
-}    
+    }    
             
-
+        if (this.allowShop) {
+            this.maxSpeedButton.visable = true;
+            console.log("Maxspeedbutton = " + this.maxSpeedButton.visable);
+        }
+        else {
+            this.maxSpeedButton.visable = false;
+            console.log(this.maxSpeedButton);
+        }
         // för pause
         if (this.keyObj.isDown) {
             // pausa nuvarande scen
@@ -468,6 +476,13 @@ class PlayScene extends Phaser.Scene {
         }
         if (this.player.x > 1000) {
             this.inColdZone = true
+        }
+
+        if (this.player.x < 300) {
+            this.allowShop = true;
+        }
+        else {
+            this.allowShop = false;
         }
         
         this.player.setVelocityX(this.velocity);
@@ -630,10 +645,6 @@ class PlayScene extends Phaser.Scene {
     updateCounter() {
         console.log("Timer tick");
     }
-}
-
-function touchingMountain() {
-    console.log("touching a piss head mountain");
 }
 
 export default PlayScene;
