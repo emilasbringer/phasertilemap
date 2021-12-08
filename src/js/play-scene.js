@@ -26,6 +26,7 @@ class PlayScene extends Phaser.Scene {
         this.allowShop = false;
         this.distanceTraveled = 0;
         this.zeunertsAmmountBank = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
+        this.zeunertsAmmountBank = 99999999;
         this.zeunertsAmmountGain = 0;
         this.zeunertsTotalGainHigh = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
 
@@ -33,73 +34,13 @@ class PlayScene extends Phaser.Scene {
         this.groundFrictionCost = 10;
         this.maxSpeedCost = 10;
         this.fortitudeCost = 50;
-        this.timedEvent = this.time.addEvent({ delay: 500, callback: this.updateCounter, callbackScope: this, loop: true });
+        this.upgradeLevels = [0,0,0,0];
+        this.gameLoop = this.time.addEvent({ delay: 100, callback: this.gameLoopUpdate, callbackScope: this, loop: true });
+        this.speedOmeterLoop = this.time.addEvent({ delay: 200, callback: this.speedOMeterUpdate, callbackScope: this, loop: true });
         this.themeMusic = this.sound.add("sickoMusic");
         this.themeMusic.play();
-        this.dashEffect = this.sound.add('skiDash', {volume: 0.8});
-
-        setInterval(() => {
-            this.velocity = this.groundFriction * this.velocity;
-            
-            if (this.coldLevel <= 0) {
-                this.deathtimer -= 0.1;
-                console.log("Cold level critical");
-                if (this.allowDeath) {
-                    console.log("Play DeathAnimation");
-                    this.player.play('death');
-                    this.allowDeath = false;
-                }
-                if (this.deathtimer <= 0) {
-                    console.log("Resetting deathtimer");
-                    this.deathtimer = 2;
-                    this.reset = true;
-                }
-            }
-            if (this.reset) {
-            this.coldLevel = this.maxColdLevel;
-            console.log("Reseting...");
-                if (this.player.x > 500 && this.reset) {
-                    this.player.x -= 100;
-                }
-                else {
-                    this.inColdZone = false;
-                    this.reset = false;
-                    this.coldLevel = this.maxColdLevel;
-                    this.allowDeath = true;
-                    this.zeunertsAmmountBank += this.zeunertsAmmountGain;
-                    this.zeunertsTotalGainHigh += this.zeunertsAmmountGain
-                    localStorage.setItem("ZeunertsBank", this.zeunertsTotalGainHigh);
-                    console.log("Gained " + this.zeunertsAmmountGain + " flasks of zeunerts this round. Your total Zeunerts is now " + this.zeunertsAmmountBank);
-                    this.zeunertsAmmountGain = 0;
-                    if (this.zeunertsAmmountBank >= this.stridePowerCost) {this.stridePowerButton.setFrame(0);}
-                    if (this.zeunertsAmmountBank >= this.groundFrictionCost) {this.groundFrictionButton.setFrame(0);}
-                    if (this.zeunertsAmmountBank >= this.maxSpeedCost) {this.maxSpeedButton.setFrame(0);}
-                    if (this.zeunertsAmmountBank >= this.fortitudeCost) {this.fortitudeButton.setFrame(0);}
-                    this.updateText();
-                }
-            }
-            else if (this.inColdZone && this.deathtimer >= 2) {
-                this.distanceTraveled = this.player.x - 1000;
-                this.zeunertsAmmountGain = Math.floor(this.distanceTraveled/100);
-                this.coldLevel -= this.fortitude;
-                console.log(this.coldLevel + " zeunerts = " + this.zeunertsAmmountGain );
-            }
-            else if (!this.inColdZone) {
-                //console.log("In warm zone");
-            }
-            this.coldLevelFactor = this.coldLevel/100;
-        }, 100);
-
-        setInterval(() => {
-            this.averageSpeed = Math.abs(Math.round(this.velocity/100));
-        }, 200);
-
-        setInterval(() => {
-            if (this.travelBackSpeed > 0) {
-                this.player.x -= this.travelBackSpeed;
-            }
-        }, 10);
-
+        this.dashEffect = this.sound.add('skiDash', {volume: 0.6});
+        this.completedLaps = 0;
         
         // skapa en tilemap från JSON filen vi preloadade
         const map = this.make.tilemap({ key: 'map' });
@@ -124,7 +65,7 @@ class PlayScene extends Phaser.Scene {
         this.deepMiddleBackground = map.createLayer('deepmiddle', tileset).setDepth(-9);
         this.background = map.createLayer('background', tileset).setDepth(-10);
 
-        this.mountain = this.add.sprite(1500, 494, 'mountain');
+        this.mountain = this.add.sprite(6500, 494, 'mountain');
         
         // platforms.setCollisionByProperty({ collides: true });
         // this.platforms.setCollisionFromCollisionGroup(
@@ -138,11 +79,12 @@ class PlayScene extends Phaser.Scene {
         this.player.setBounce(0).setScale(1.75);
         this.player.setCollideWorldBounds(true);
         this.player.setSize(32, 36, 50, 100);
-        this.cameras.main.x = -this.player.x + 700;
+        this.cameras.main.x = -this.player.x + 700; 
 
         this.vendor = this.physics.add.sprite(100, 300, 'vendor')
         this.vendor.setScale(3).setSize(32, 32, 100, 100).setDepth(-1);
 
+        this. endBorder = this.add.rectangle(15000, 526, 10, 50, 0x166df7);
         //Rectangles
         this.dangerBorder = this.add.rectangle(1000, 526, 10, 50, 0x166df7);
         this.dangerBorder.setOrigin(0,0);
@@ -210,7 +152,6 @@ class PlayScene extends Phaser.Scene {
         // krocka med platforms lagret
         this.physics.add.collider(this.vendor, this.platforms);
         this.physics.add.collider(this.player, this.platforms);
-        this.physics.add.overlap(this.player, this.vendor, this.touchingVendor());
 
         // skapa text på spelet, texten är tom
         // textens innehåll sätts med updateText() metoden
@@ -237,8 +178,9 @@ class PlayScene extends Phaser.Scene {
 
     // play scenens update metod
     update() {
-        {
         // UI //
+        {
+        
         if (this.player.x > 700 && this.player.x < 19800) {
             this.cameras.main.x = -this.player.x + 700;
             this.middleBackground.x = this.player.x * 0.5 - 350;
@@ -304,7 +246,7 @@ class PlayScene extends Phaser.Scene {
         this.healthbar.width = this.coldLevelFactor * 298;
         this.vendor.play('vendorIdle', true);
     }
-
+        // Upgrades //
         {
         // StridePower //
         //On Pointer Out
@@ -412,12 +354,10 @@ class PlayScene extends Phaser.Scene {
     }    
             
         if (this.allowShop) {
-            this.maxSpeedButton.visable = true;
-            console.log("Maxspeedbutton = " + this.maxSpeedButton.visable);
+            this.setUpgradeButtonsVisability(true);
         }
         else {
-            this.maxSpeedButton.visable = false;
-            console.log(this.maxSpeedButton);
+            this.setUpgradeButtonsVisability(false);
         }
         // för pause
         if (this.keyObj.isDown) {
@@ -484,11 +424,62 @@ class PlayScene extends Phaser.Scene {
         else {
             this.allowShop = false;
         }
+
+        if (this.player.x > 12288 && this.completedLaps < 10) {
+            this.player.x = 2048
+            this.completedLaps++;
+        }
         
         this.player.setVelocityX(this.velocity);
         this.speedTextValue.setText(this.averageSpeed); 
     }
 
+    //--- Game Loop ---
+    gameLoopUpdate() {
+        this.velocity = this.groundFriction * this.velocity;
+            
+            if (this.coldLevel <= 0) {
+                this.deathtimer -= 0.1;
+                console.log("Cold level critical");
+                if (this.allowDeath) {
+                    console.log("Play DeathAnimation");
+                    this.player.play('death');
+                    this.allowDeath = false;
+                }
+                if (this.deathtimer <= 0) {
+                    console.log("Resetting deathtimer");
+                    this.deathtimer = 2;
+                    this.reset = true;
+                }
+            }
+            if (this.reset) {
+                this.reset = false;
+                this.completedLaps = 0;
+                this.coldLevel = this.maxColdLevel;
+                console.log("Reseting...");
+                this.player.x = 450;
+                this.inColdZone = false;
+                this.coldLevel = this.maxColdLevel;
+                this.allowDeath = true;
+                this.zeunertsAmmountBank += this.zeunertsAmmountGain;
+                this.zeunertsTotalGainHigh += this.zeunertsAmmountGain
+                localStorage.setItem("ZeunertsBank", this.zeunertsTotalGainHigh);
+                console.log("Gained " + this.zeunertsAmmountGain + " flasks of zeunerts this round. Your total Zeunerts is now " + this.zeunertsAmmountBank);
+                this.zeunertsAmmountGain = 0;
+                if (this.zeunertsAmmountBank >= this.stridePowerCost) {this.stridePowerButton.setFrame(0);}
+                if (this.zeunertsAmmountBank >= this.groundFrictionCost) {this.groundFrictionButton.setFrame(0);}
+                if (this.zeunertsAmmountBank >= this.maxSpeedCost) {this.maxSpeedButton.setFrame(0);}
+                if (this.zeunertsAmmountBank >= this.fortitudeCost) {this.fortitudeButton.setFrame(0);}
+                this.updateText();
+            }
+            else if (this.inColdZone && this.deathtimer >= 2) {
+                this.distanceTraveled = this.player.x - 1000;
+                this.zeunertsAmmountGain = Math.floor(this.distanceTraveled/100);
+                this.coldLevel -= this.fortitude;
+                console.log("Traveled " + (Math.floor( this.distanceTraveled/50)) + " Meters");
+            }
+            this.coldLevelFactor = this.coldLevel/100;
+    }
 
     upgradeStridePower() {
         this.stridePowerButton.setFrame(2);
@@ -502,7 +493,7 @@ class PlayScene extends Phaser.Scene {
         this.groundFrictionButton.setFrame(2);
         this.zeunertsAmmountBank -= this.groundFrictionCost;
         this.groundFrictionCost = Math.floor(this.groundFrictionCost * 1.5);
-        this.groundFriction = (this.groundFriction * 1.05);
+        this.groundFriction = (Math.pow(this.groundFriction, 0.9) );
         this.updateButtons();
     }
 
@@ -529,6 +520,21 @@ class PlayScene extends Phaser.Scene {
         if (this.fortitudeCost > this.zeunertsAmmountBank) {this.fortitudeButton.setFrame(2);}
     }
 
+    setUpgradeButtonsVisability(boolean) {
+        this.maxSpeedButton.setVisible(boolean);
+        this.maxSpeedText.setVisible(boolean);
+        this.maxSpeedTextCost.setVisible(boolean);
+        this.groundFrictionButton.setVisible(boolean);
+        this.groundFrictionText.setVisible(boolean);
+        this.groundFrictionTextCost.setVisible(boolean);
+        this.stridePowerButton.setVisible(boolean);
+        this.stridePowerText.setVisible(boolean);
+        this.stridePowerTextCost.setVisible(boolean);
+        this.fortitudeButton.setVisible(boolean);
+        this.fortitudeText.setVisible(boolean);
+        this.fortitudeTextCost.setVisible(boolean);
+    }
+
     // metoden updateText för att uppdatera overlaytexten i spelet
     updateText() {
         this.zeunertsAmmountTextValue.setText(
@@ -548,8 +554,8 @@ class PlayScene extends Phaser.Scene {
         )
     }
 
-    touchingVendor() {
-        console.log("Currently harrasing vendor");
+    speedOMeterUpdate() {
+        this.averageSpeed = Math.abs(Math.round(this.velocity/100));
     }
 
     // när spelaren landar på en spik, då körs följande metod
@@ -628,7 +634,7 @@ class PlayScene extends Phaser.Scene {
                 prefix: 'adventurer-die-'
             }),
             frameRate: 40,
-            repeat: 1
+            repeat: 0
         });
         this.anims.create({
             key: 'vendorIdle',
@@ -641,9 +647,6 @@ class PlayScene extends Phaser.Scene {
             frameRate: 3,
             repeat: 1
         });
-    }
-    updateCounter() {
-        console.log("Timer tick");
     }
 }
 
