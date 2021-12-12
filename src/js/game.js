@@ -7,7 +7,7 @@ import MenuScene from './menu-scene';
 const config = {
     type: Phaser.AUTO,
     width: 16384,
-    height: window.innerHeight,
+    height: 1024,
     pixelArt: true,
     transparent: true,
     physics: {

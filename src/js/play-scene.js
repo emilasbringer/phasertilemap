@@ -45,7 +45,7 @@ class PlayScene extends Phaser.Scene {
         // skapa en tilemap från JSON filen vi preloadade
         const map = this.make.tilemap({ key: 'map' });
         // ladda in tilesetbilden till vår tilemap
-        const tileset = map.addTilesetImage('jefrens_tilesheet', 'tiles');
+        const tileset = map.addTilesetImage('wintertileset64x64', 'tiles');
 
         // initiera animationer
         this.initAnims();
@@ -60,10 +60,10 @@ class PlayScene extends Phaser.Scene {
         // sätt collisionen
         this.platforms = map.createLayer('platform', tileset);
         this.platforms.setCollisionByExclusion(-1, true);
-        
+        this.buildings = map.createLayer('buildings', tileset).setDepth(-2);
         this.middleBackground = map.createLayer('middle', tileset).setDepth(-8);
         this.deepMiddleBackground = map.createLayer('deepmiddle', tileset).setDepth(-9);
-        this.background = map.createLayer('background', tileset).setDepth(-10);
+        this.background = map.createLayer('background', tileset).setDepth(-3);
 
         this.mountain = this.add.sprite(6500, 494, 'mountain');
         
@@ -75,49 +75,54 @@ class PlayScene extends Phaser.Scene {
         // );
         // platforms.setCollision(1, true, true);
 
+        console.log(map);
+
         this.player = this.physics.add.sprite(600, 300, 'dude');
         this.player.setBounce(0).setScale(1.75);
         this.player.setCollideWorldBounds(true);
         this.player.setSize(32, 36, 50, 100);
         this.cameras.main.x = -this.player.x + 700; 
+        this.cameras.main.y = -256; 
 
         this.vendor = this.physics.add.sprite(100, 300, 'vendor')
         this.vendor.setScale(3).setSize(32, 32, 100, 100).setDepth(-1);
 
-        this. endBorder = this.add.rectangle(15000, 526, 10, 50, 0x166df7);
+        this.startFlag = this.add.sprite(0, 0, 'startflag');
+
+        this.endBorder = this.add.rectangle(15000, 526, 10, 50, 0x166df7);
         //Rectangles
-        this.dangerBorder = this.add.rectangle(1000, 526, 10, 50, 0x166df7);
-        this.dangerBorder.setOrigin(0,0);
-        this.menu = this.add.rectangle(0, 640, window.innerWidth, 80, 0x000000);
+        this.menu = this.add.rectangle(0, 256, window.innerWidth, 80, 0x000000);
         this.menu.setOrigin(0,0);
-        this.healthbarContainer = this.add.rectangle(10, 695, 300, 20, 0xfffffff);
+        this.healthbarContainer = this.add.rectangle(10, (this.menu.y+45), 300, 20, 0xfffffff);
         this.healthbarContainer.setStrokeStyle(2, 0xfffffff)
         this.healthbarContainer.setOrigin(0,0.5);
-        this.healthbar = this.add.rectangle(11, 695, 298, 18, 0x4dafff);
+        this.healthbar = this.add.rectangle(11, (this.menu.y+45), 298, 18, 0x4dafff);
         this.healthbar.setOrigin(0,0.5);
+        this.shopScreenBorder = this.add.rectangle(750, 600, 716, 516, 0x000000);
+        this.shopScreen = this.add.rectangle(750, 600, 700, 500, 0x303060);
 
         //Texts
-        this.coldLevelText = this.add.text(0, 645, 'Cold level', {font: '32px CustomFont', fontWeight: '1000', fontSize: '32px'});
-        this.zeunertsAmmountText = this.add.text(0, 645, 'Zeunerts wealth', {font: '32px CustomFont'});
-        this.zeunertsIcon = this.add.sprite(0, 697, 'zeunerts').setScale(0.05,0.05);
-        this.zeunertsAmmountTextValue = this.add.text(0, 680, `Flasks: ${ this.zeunertsAmmountBank }`, {font: '32px CustomFont', fontWeight: '1000', fontSize: '32px'});
-        this.stridePowerText = this.add.text(0, 645, 'Stride Power',{font: '20px CustomFont'});
-        this.stridePowerTextCost = this.add.text(0, 700, this.stridePowerCost,{font: '20px CustomFont'});
-        this.groundFrictionText = this.add.text(0, 645, 'Friction',{font: '20px CustomFont'}); 
-        this.groundFrictionTextCost = this.add.text(0, 700, this.groundFrictionCost,{font: '20px CustomFont'});
-        this.maxSpeedText = this.add.text(0, 645, 'Max Speed',{font: '20px CustomFont'}); 
-        this.maxSpeedTextCost = this.add.text(0, 700, this.maxSpeedCost,{font: '20px CustomFont'});
-        this.fortitudeText = this.add.text(0, 645, 'Cold Fortitude',{font: '20px CustomFont'}); 
-        this.fortitudeTextCost = this.add.text(0, 700, this.fortitudeCost,{font: '20px CustomFont'});
+        this.coldLevelText = this.add.text(0, this.menu.y, 'Cold level', {font: '32px CustomFont', fontWeight: '1000', fontSize: '32px'});
+        this.zeunertsAmmountText = this.add.text(0, this.menu.y, 'Zeunerts wealth', {font: '32px CustomFont'});
+        this.zeunertsIcon = this.add.sprite(0, (this.menu.y + 57), 'zeunerts').setScale(0.05,0.05);
+        this.zeunertsAmmountTextValue = this.add.text(0, (this.menu.y+40), `Flasks: ${ this.zeunertsAmmountBank }`, {font: '32px CustomFont', fontWeight: '1000', fontSize: '32px'});
+        this.stridePowerText = this.add.text(0, (this.shopScreen.y-200), 'Stride Power',{font: '20px CustomFont'});
+        this.stridePowerTextCost = this.add.text(0, (this.shopScreen.y), this.stridePowerCost,{font: '20px CustomFont'});
+        this.groundFrictionText = this.add.text(0, (this.shopScreen.y-200), 'Friction',{font: '20px CustomFont'}); 
+        this.groundFrictionTextCost = this.add.text(0, (this.shopScreen.y), this.groundFrictionCost,{font: '20px CustomFont'});
+        this.maxSpeedText = this.add.text(0, (this.shopScreen.y-200), 'Max Speed',{font: '20px CustomFont'}); 
+        this.maxSpeedTextCost = this.add.text(0, (this.shopScreen.y), this.maxSpeedCost,{font: '20px CustomFont'});
+        this.fortitudeText = this.add.text(0, (this.shopScreen.y-200), 'Cold Fortitude',{font: '20px CustomFont'}); 
+        this.fortitudeTextCost = this.add.text(0, (this.shopScreen.y), this.fortitudeCost,{font: '20px CustomFont'});
 
-        this.speedText = this.add.text(0, 645, 'km/h', {font: '30px CustomFont'});
-        this.speedTextValue = this.add.text(0, 670, '0', {font: '40px CustomFont'});
+        this.speedText = this.add.text(0, (this.menu.y), 'km/h', {font: '30px CustomFont'});
+        this.speedTextValue = this.add.text(0, (this.menu.y+30), '0', {font: '40px CustomFont'});
 
         //Buttons
-        this.stridePowerButton = this.add.sprite(590, 682,'button').setScale(0.15,0.15).setInteractive().setFrame(2);
-        this.groundFrictionButton = this.add.sprite(this.stridePowerButton.x+100, 682,'button').setScale(0.15,0.15).setInteractive().setFrame(2);
-        this.maxSpeedButton = this.add.sprite(this.stridePowerButton.x+200, 682,'button').setScale(0.15,0.15).setInteractive().setFrame(2);
-        this.fortitudeButton = this.add.sprite(this.stridePowerButton.x+300, 682,'button').setScale(0.15,0.15).setInteractive().setFrame(2);
+        this.stridePowerButton = this.add.sprite(525, (this.shopScreen.y-100),'button').setScale(0.4,0.4).setInteractive().setFrame(2);
+        this.groundFrictionButton = this.add.sprite(this.stridePowerButton.x+150, (this.shopScreen.y-100),'button').setScale(0.4,0.4).setInteractive().setFrame(2);
+        this.maxSpeedButton = this.add.sprite(this.stridePowerButton.x+300, (this.shopScreen.y-100),'button').setScale(0.4,0.4).setInteractive().setFrame(2);
+        this.fortitudeButton = this.add.sprite(this.stridePowerButton.x+450, (this.shopScreen.y-100),'button').setScale(0.4,0.4).setInteractive().setFrame(2);
 
         // skapa en fysik-grupp
         /*this.spikes = this.physics.add.group({
@@ -184,30 +189,15 @@ class PlayScene extends Phaser.Scene {
         if (this.player.x > 700 && this.player.x < 19800) {
             this.cameras.main.x = -this.player.x + 700;
             this.middleBackground.x = this.player.x * 0.5 - 350;
-            this.deepMiddleBackground.x = this.player.x * 0.7 - 490;
+            this.deepMiddleBackground.x = this.player.x * 0.05 - 490;
             this.menu.x = this.player.x - 700;
             this.healthbarContainer.x = this.player.x - 491;
             this.healthbar.x = this.player.x - 490;
             this.coldLevelText.x = this.player.x - 490;
             this.zeunertsAmmountText.x = this.player.x + 300;
             this.zeunertsAmmountTextValue.x = this.player.x + 300;
-            this.zeunertsIcon.x = this.player.x + 450; 
-            //Texts
-            this.stridePowerText.x = this.player.x - 160;
-            this.groundFrictionText.x = this.player.x - 40;
-            this.maxSpeedText.x = this.player.x + 48;
-            this.fortitudeText.x = this.player.x + 145;
-
-            this.stridePowerTextCost.x = this.player.x - 118;
-            this.groundFrictionTextCost.x = this.stridePowerTextCost.x + 100;
-            this.maxSpeedTextCost.x = this.stridePowerTextCost.x + 200;
-            this.fortitudeTextCost.x = this.stridePowerTextCost.x + 300;
-
-            //Buttons
-            this.stridePowerButton.x = this.player.x - 110;
-            this.groundFrictionButton.x = this.stridePowerButton.x + 100;
-            this.maxSpeedButton.x = this.stridePowerButton.x + 200;
-            this.fortitudeButton.x = this.stridePowerButton.x + 300;
+            this.zeunertsIcon.x = this.player.x + 410; 
+           
 
             this.speedText.x = this.player.x + 650;
             this.speedTextValue.x = this.player.x + 664;
@@ -223,7 +213,7 @@ class PlayScene extends Phaser.Scene {
             this.coldLevelText.x = 210;
             this.zeunertsAmmountText.x = 1000;
             this.zeunertsAmmountTextValue.x = 1000;
-            this.zeunertsIcon.x = 1150;
+            this.zeunertsIcon.x = 1110;
             //Texts
             this.stridePowerText.x = 540; 
             this.groundFrictionText.x = 660;
@@ -233,11 +223,7 @@ class PlayScene extends Phaser.Scene {
             this.groundFrictionTextCost.x = 682;
             this.maxSpeedTextCost.x = 782;
             this.fortitudeTextCost.x = 882;
-            //Buttons
-            this.stridePowerButton.x = 590;
-            this.groundFrictionButton.x = this.stridePowerButton.x + 100;
-            this.maxSpeedButton.x = this.stridePowerButton.x + 200;
-            this.fortitudeButton.x = this.stridePowerButton.x + 300;
+            
 
             this.speedText.x = 1350;
             this.speedTextValue.x = 1364;
@@ -245,6 +231,7 @@ class PlayScene extends Phaser.Scene {
         }
         this.healthbar.width = this.coldLevelFactor * 298;
         this.vendor.play('vendorIdle', true);
+        this.startFlag.play('flagwave', true);
     }
         // Upgrades //
         {
@@ -533,12 +520,14 @@ class PlayScene extends Phaser.Scene {
         this.fortitudeButton.setVisible(boolean);
         this.fortitudeText.setVisible(boolean);
         this.fortitudeTextCost.setVisible(boolean);
+        this.shopScreen.setVisible(boolean);
+        this.shopScreenBorder.setVisible(boolean);
     }
 
     // metoden updateText för att uppdatera overlaytexten i spelet
     updateText() {
         this.zeunertsAmmountTextValue.setText(
-            `Flasks: ${this.zeunertsAmmountBank}`
+            `Flasks:     ${this.zeunertsAmmountBank}`
         );
         this.stridePowerTextCost.setText(
             `${this.stridePowerCost}`
@@ -577,7 +566,7 @@ class PlayScene extends Phaser.Scene {
     }
 
     // när vi skapar scenen så körs initAnims för att ladda spelarens animationer
-    initAnims() {           
+    initAnims() { 
         this.anims.create({
             key: 'idle',
             frames: this.anims.generateFrameNames('dude', {
@@ -646,6 +635,17 @@ class PlayScene extends Phaser.Scene {
             }),
             frameRate: 3,
             repeat: 1
+        });
+        this.anims.create({
+            key: 'flagwave',
+            frames: this.anims.generateFrameNames('startflag', {
+                start: 0,
+                end: 4,
+                zeroPad: 3,
+                prefix: 'tile'
+            }),
+            frameRate: 5,
+            repeat: -1
         });
     }
 }
