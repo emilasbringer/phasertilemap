@@ -26,13 +26,13 @@ class PreloadScene extends Phaser.Scene {
         );
         this.load.atlas(
             'dude',
-            '/images/texture.png',
-            '/images/texture.json'
+            '/images/penguinAnimation.png',
+            '/images/penguinAnimation.json'
         );
         this.load.atlas(
             'vendor',
-            '/images/vendor.png',
-            '/images/vendor.json'
+            '/images/shopAnimation.png',
+            '/images/shopAnimation.json'
         );
         this.load.atlas(
             'startflag',

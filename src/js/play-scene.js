@@ -80,12 +80,11 @@ class PlayScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(600, 300, 'dude');
         this.player.setBounce(0).setScale(1.75);
         this.player.setCollideWorldBounds(true);
-        this.player.setSize(32, 36, 50, 100);
+        this.player.setSize(70, 63);
         this.cameras.main.x = -this.player.x + 700; 
         this.cameras.main.y = -256; 
 
-        this.vendor = this.physics.add.sprite(100, 300, 'vendor')
-        this.vendor.setScale(3).setSize(32, 32, 100, 100).setDepth(-1);
+        this.vendor = this.add.sprite(160, 608, 'vendor').setDepth(-2);
 
         this.startFlag = this.add.sprite(0, 0, 'startflag');
 
@@ -230,7 +229,7 @@ class PlayScene extends Phaser.Scene {
             
         }
         this.healthbar.width = this.coldLevelFactor * 298;
-        this.vendor.play('vendorIdle', true);
+        this.vendor.play('vendoridle', true);
         this.startFlag.play('flagwave', true);
     }
         // Upgrades //
@@ -360,7 +359,7 @@ class PlayScene extends Phaser.Scene {
             this.velocity -= this.stridePower;
             this.tapAllowed = false;
             this.dashEffect.play();
-            if (this.player.body.onFloor()) {
+            if (this.player.body.onFloor() && this.player.x > 1000) {
                 this.player.play('walk', true);
             }
         } 
@@ -368,7 +367,7 @@ class PlayScene extends Phaser.Scene {
             this.velocity += this.stridePower;
             this.tapAllowed = false;
             this.dashEffect.play();
-            if (this.player.body.onFloor()) {
+            if (this.player.body.onFloor() && this.player.x > 1000) {
                 this.player.play('walk', true);
             }
         } else if (!this.cursors.right.isDown && !this.cursors.left.isDown) {
@@ -388,11 +387,11 @@ class PlayScene extends Phaser.Scene {
             this.player.body.onFloor() && this.deathtimer >= 2
         ) {
             this.player.setVelocityY(-550);
-            this.player.play('jumpingUp');
+        
         }
 
         if (this.player.body.velocity.y > 100) {
-            this.player.play('jumpingDown');
+           
         }
 
         if (this.player.body.velocity.x > 0) {
@@ -417,6 +416,10 @@ class PlayScene extends Phaser.Scene {
             this.completedLaps++;
         }
         
+        if (this.velocity > 10 && this.player.x > 1000) {
+            this.player.play('walk', true);
+        }
+
         this.player.setVelocityX(this.velocity);
         this.speedTextValue.setText(this.averageSpeed); 
     }
@@ -430,7 +433,7 @@ class PlayScene extends Phaser.Scene {
                 console.log("Cold level critical");
                 if (this.allowDeath) {
                     console.log("Play DeathAnimation");
-                    this.player.play('death');
+                    
                     this.allowDeath = false;
                 }
                 if (this.deathtimer <= 0) {
@@ -445,6 +448,7 @@ class PlayScene extends Phaser.Scene {
                 this.coldLevel = this.maxColdLevel;
                 console.log("Reseting...");
                 this.player.x = 450;
+                this.player.y = 500;
                 this.inColdZone = false;
                 this.coldLevel = this.maxColdLevel;
                 this.allowDeath = true;
@@ -573,67 +577,38 @@ class PlayScene extends Phaser.Scene {
                 start: 0,
                 end: 2,
                 zeroPad: 2,
-                prefix: 'adventurer-idle-2-'
+                prefix: 'idle'
             }),
             frameRate: 8,
             repeat: -1
         });
         
-        this.anims.create({
-            key: 'jumpingUp',
-            frames: this.anims.generateFrameNames('dude', {
-                start: 0,
-                end: 3,
-                zeroPad: 2,
-                prefix: 'adventurer-jump-'
-            }),
-            frameRate: 30
-        });
-
-        this.anims.create({
-            key: 'jumpingDown',
-            frames: this.anims.generateFrameNames('dude', {
-                start: 0,
-                end: 1,
-                zeroPad: 2,
-                prefix: 'adventurer-fall-'
-            }),
-            frameRate: 8,
-            repeat: -1
-        });
+    
 
         this.anims.create({
             key: 'walk',
             frames: this.anims.generateFrameNames('dude', {
-                start: 0,
-                end: 5,
+                start: 1,
+                end: 30,
                 zeroPad: 2,
-                prefix: 'adventurer-run-'
+                prefix: 'slide'
             }),
-            frameRate: 10,
-            repeat: -1
+            frameRate: 20,
+            repeat: 1
         });
 
+        // Death //
+
+
         this.anims.create({
-            key: 'death',
-            frames: this.anims.generateFrameNames('dude', {
-                start: 0,
+            key: 'vendoridle',
+            frames: this.anims.generateFrameNames('vendor', {
+                start: 1,
                 end: 6,
                 zeroPad: 2,
-                prefix: 'adventurer-die-'
+                prefix: 'vendor'
             }),
-            frameRate: 40,
-            repeat: 0
-        });
-        this.anims.create({
-            key: 'vendorIdle',
-            frames: this.anims.generateFrameNames('vendor', {
-                start: 0,
-                end: 3,
-                zeroPad: 3,
-                prefix: 'tile'
-            }),
-            frameRate: 3,
+            frameRate: 10,
             repeat: 1
         });
         this.anims.create({
