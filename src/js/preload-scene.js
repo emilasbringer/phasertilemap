@@ -42,8 +42,8 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('tiles', '/tilesets/wintertileset64x64.png');
         // här laddar vi in en tilemap med spelets "karta"
         this.load.tilemapTiledJSON('map', '/tilemaps/wintertilemap.json');
-        this.load.audio('sickoMusic', ['/audio/Panama.mp3']);
-        this.load.audio('skiDash', ['/audio/EffectSkiDash.mp3'])
+        this.load.audio('sickoMusic', ['audio/Panama.mp3']);
+        this.load.audio('skiDash', ['audio/EffectSkiDash.mp3'])
     }
 
     create() {
