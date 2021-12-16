@@ -26,7 +26,7 @@ class PlayScene extends Phaser.Scene {
         this.allowShop = false;
         this.distanceTraveled = 0;
         this.zeunertsAmmountBank = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
-        this.zeunertsAmmountBank = 99999999;
+        this.zeunertsAmmountBank = 0;
         this.zeunertsAmmountGain = 0;
         this.zeunertsTotalGainHigh = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
 
