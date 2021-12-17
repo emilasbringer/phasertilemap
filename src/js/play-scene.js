@@ -26,7 +26,7 @@ class PlayScene extends Phaser.Scene {
         this.allowShop = false;
         this.distanceTraveled = 0;
         this.zeunertsAmmountBank = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
-        this.zeunertsAmmountBank = 1000000;
+        this.zeunertsAmmountBank = 0;
         this.zeunertsAmmountGain = 0;
         this.zeunertsTotalGainHigh = parseInt(localStorage.getItem('ZeunertsBank')) || 0;
 
@@ -67,7 +67,6 @@ class PlayScene extends Phaser.Scene {
         this.deepMiddleBackground = map.createLayer('deepmiddle', tileset).setDepth(-9);
         this.background = map.createLayer('background', tileset).setDepth(-3);
 
-        this.mountain = this.add.sprite(6500, 494, 'mountain');
         
         // platforms.setCollisionByProperty({ collides: true });
         // this.platforms.setCollisionFromCollisionGroup(
@@ -77,7 +76,6 @@ class PlayScene extends Phaser.Scene {
         // );
         // platforms.setCollision(1, true, true);
 
-        console.log(map);
 
         this.player = this.physics.add.sprite(600, 300, 'dude');
         this.player.setBounce(0).setScale(1.75);
@@ -103,7 +101,7 @@ class PlayScene extends Phaser.Scene {
         this.zeunertsGainerDisplay = this.add.rectangle(0, 285, 600, 80, 0x101010).setDepth(-1);
         this.zeunertsGainerDisplay.setStrokeStyle(5, 0x4dafff)
         
-        this.startScreen = this.add.rectangle(innerWidth/2,innerHeight-105,innerWidth,innerHeight*2, 0x5B5B5B).setDepth(100);
+        this.startScreen = this.add.rectangle(innerWidth/2,innerHeight-105,innerWidth,innerHeight*2, 0x363636).setDepth(100);
         
         
 
@@ -190,7 +188,6 @@ class PlayScene extends Phaser.Scene {
         });
         this.text.setScrollFactor(0);
         this.updateText();
-        console.log("Cant refresh buttons because i am trash programmer. Updating buttons with ZeunertsBank = " + this.zeunertsAmmountBank);
         this.updateButtons();
 
         // lägg till en keyboard input för W
@@ -466,7 +463,6 @@ class PlayScene extends Phaser.Scene {
                 console.log("Cold level critical");
                 if (this.allowDeath) {
                     console.log("Play DeathAnimation");
-                    
                     this.allowDeath = false;
                 }
                 if (this.deathtimer <= 0) {
@@ -477,6 +473,7 @@ class PlayScene extends Phaser.Scene {
             }
             if (this.player.y > 900) {
                 this.reset = true;
+                this.deathtimer = 2;
             }
             if (this.reset) {
                 this.reset = false;
@@ -501,7 +498,7 @@ class PlayScene extends Phaser.Scene {
             }
             else if (this.inColdZone && this.deathtimer >= 2) {
                 this.distanceTraveled = this.player.x - 1000;
-                this.zeunertsAmmountGain = Math.floor(this.distanceTraveled/100);
+                this.zeunertsAmmountGain = Math.floor(this.distanceTraveled/100) + this.completedLaps * 120;
                 this.coldLevel -= this.fortitude;
                 console.log("Traveled " + (Math.floor( this.distanceTraveled/50)) + " Meters");
             }
