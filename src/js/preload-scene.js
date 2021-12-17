@@ -10,12 +10,21 @@ class PreloadScene extends Phaser.Scene {
         this.load.image('spike', '/images/spike.png');
         this.load.image('mountain', '/images/mountain.png');
         this.load.image('zeunerts', '/images/zeunerts.png');
-        this.load.spritesheet('button', '/images/uppgradebutton.png',{
-            frameWidth: 252,
-            frameHeight: 247
-            });
-        this.load.spritesheet('speedbutton', '/images/uppgradebutton.png',{
-            frameWidth: 164,
+        this.load.image('sign', '/images/sign.png');
+        this.load.spritesheet('speedbutton', '/images/speedicon.png',{
+            frameWidth: 40,
+            frameHeight: 35
+        });
+        this.load.spritesheet('maxspeedbutton', '/images/maxspeedicon.png',{
+            frameWidth: 40,
+            frameHeight: 35
+        });
+        this.load.spritesheet('frictionbutton', '/images/frictionicon.png',{
+            frameWidth: 40,
+            frameHeight: 35
+        });
+        this.load.spritesheet('fortitudebutton', '/images/coldresistanceicon.png',{
+            frameWidth: 40,
             frameHeight: 35
         });
         this.load.atlas(
