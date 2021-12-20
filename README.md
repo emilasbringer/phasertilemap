@@ -12,7 +12,7 @@
 ”Hjälp Fiskslukarn Bengtson ta sig till Zunertsfabriken och belöna NTI elever med smasksig julvätska”
 ### Image : 
 
-![image]()
+![image](emil-3.png)
 ### Url: 
 
 https://zunertschronicles.netlify.app/
