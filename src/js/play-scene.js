@@ -9,7 +9,7 @@ class PlayScene extends Phaser.Scene {
         this.velocity = 0;
         this.averageSpeed = 0;
         this.travelBackSpeed = 0;
-        this.stridePower = 250;
+        this.stridePower = 200;
         this.groundFriction = 0.7;
         this.maxSpeed = 1;
         this.fortitude = 5;
@@ -48,6 +48,10 @@ class PlayScene extends Phaser.Scene {
         const map = this.make.tilemap({ key: 'map' });
         // ladda in tilesetbilden till vår tilemap
         const tileset = map.addTilesetImage('wintertileset64x64', 'tiles');
+        const layer1 = map.addTilesetImage('layer-1', 'layer-1');
+        const layer2 = map.addTilesetImage('layer-2', 'layer-2');
+        const layer3 = map.addTilesetImage('layer-3', 'layer-3');
+        const layer4 = map.addTilesetImage('layer-4', 'layer-4');
 
         // initiera animationer
         this.initAnims();
@@ -63,9 +67,14 @@ class PlayScene extends Phaser.Scene {
         this.platforms = map.createLayer('platform', tileset);
         this.platforms.setCollisionByExclusion(-1, true);
         this.buildings = map.createLayer('buildings', tileset).setDepth(-2);
+        this.background = map.createLayer('background', tileset).setDepth(-3);
         this.middleBackground = map.createLayer('middle', tileset).setDepth(-8);
         this.deepMiddleBackground = map.createLayer('deepmiddle', tileset).setDepth(-9);
-        this.background = map.createLayer('background', tileset).setDepth(-3);
+        this.deepDeepBackground = map.createLayer('deepDeepBackground', layer1).setDepth(-10);
+        this.deepDeepDeepBackground = map.createLayer('deepDeepDeepBackground', layer2).setDepth(-11);
+        this.deepDeepDeepDeepBackground = map.createLayer('deepDeepDeepDeepBackground', layer3).setDepth(-12);
+        this.deepDeepDeepDeepDeepBackground = map.createLayer('deepDeepDeepDeepDeepBackground', layer4).setDepth(-13);
+        
 
         
         // platforms.setCollisionByProperty({ collides: true });
@@ -87,7 +96,6 @@ class PlayScene extends Phaser.Scene {
         this.vendor = this.add.sprite(160, 608, 'vendor').setDepth(-2);
         this.sign = this.add.sprite(1200, 400, 'sign').setScale(4.5,3).setDepth(-2);
 
-        this.endBorder = this.add.rectangle(15000, 526, 10, 50, 0x166df7);
         //Rectangles
         this.menu = this.add.rectangle(0, 256, window.innerWidth, 80, 0x000000);
         this.menu.setOrigin(0,0);
@@ -98,9 +106,9 @@ class PlayScene extends Phaser.Scene {
         this.healthbar.setOrigin(0,0.5);
         this.shopScreenBorder = this.add.rectangle(750, 600, 716, 516, 0x000000);
         this.shopScreen = this.add.rectangle(750, 600, 700, 500, 0x303060);
-        this.zeunertsGainerDisplay = this.add.rectangle(0, 285, 600, 80, 0x101010).setDepth(-1);
+        this.zeunertsGainerDisplay = this.add.rectangle(0, 285, 600, 80, 0x010101).setDepth(-1);
         this.zeunertsGainerDisplay.setStrokeStyle(5, 0x4dafff)
-        
+        this.distanceDisplay = this.add.rectangle(innerWidth-11, 900, 70, 500, 0x999999).setOrigin(1,1).setStrokeStyle(5,0x000000);
         this.startScreen = this.add.rectangle(innerWidth/2,innerHeight-105,innerWidth,innerHeight*2, 0x363636).setDepth(100);
         
         
@@ -114,8 +122,6 @@ class PlayScene extends Phaser.Scene {
         this.menuPenguin = this.add.sprite(750,600, 'dude').setDepth(200).setScale(3,3);
         this.creatorText = this.add.text(200, (900), 'Created by Emil Åsbringer TE19', {font: '96px CustomFont'}).setDepth(110);
         this.smallCreatorText = this.add.text(20, (950), 'Created by Emil Åsbringer TE19', {font: '32px CustomFont'}).setDepth(90);
-
-        
 
         this.zeunertsAmmountText =      this.add.text(0, this.menu.y, 'Zeunerts wealth', {font: '32px CustomFont'});
         this.zeunertsIcon =             this.add.sprite(0, (this.menu.y + 57), 'zeunerts').setScale(0.05,0.05);
@@ -210,7 +216,11 @@ class PlayScene extends Phaser.Scene {
         if (this.player.x > 700 && this.player.x < 19800) {
             this.cameras.main.x = -this.player.x + 700;
             this.middleBackground.x = this.player.x * 0.5 - 350;
-            this.deepMiddleBackground.x = this.player.x * 0.05 - 490;
+            this.deepMiddleBackground.x = this.player.x * 0.05 - 480;
+            this.deepDeepBackground.x = this.player.x * 0.05 -              1180;
+            this.deepDeepDeepBackground.x = this.player.x * 0.04 -          1180;
+            this.deepDeepDeepDeepBackground.x = this.player.x * 0.03 -      1180;
+            this.deepDeepDeepDeepDeepBackground.x = this.player.x * 0.02 -  1180;
             this.menu.x = this.player.x - 700;
             this.healthbarContainer.x = this.player.x - 491;
             this.healthbar.x = this.player.x - 490;
@@ -223,11 +233,16 @@ class PlayScene extends Phaser.Scene {
             this.zeunertsGainerDisplay.x = this.player.x+50;
             this.zeunertsGainerText.x =  this.zeunertsGainerDisplay.x - 220;
             this.zeunertsGainerText.y = this.zeunertsGainerDisplay.y - 25;
+            this.distanceDisplay.x = this.player.x + 825
         }
         else if (this.player.x < 696) {
             this.cameras.main.x = 0;
             this.middleBackground.x = 0;
             this.deepMiddleBackground.x = 0;
+            this.deepDeepBackground.x =            700 * 0.05 -1180;
+            this.deepDeepDeepBackground.x =        700 * 0.04 -1180;
+            this.deepDeepDeepDeepBackground.x =    700 * 0.03 -1180;
+            this.deepDeepDeepDeepDeepBackground.x =700 * 0.02 -1180;
             this.menu.x = 0;
             this.healthbarContainer.x = 209;
             this.healthbar.x = 210;
@@ -236,6 +251,7 @@ class PlayScene extends Phaser.Scene {
             this.zeunertsAmmountTextValue.x = 1000;
             this.zeunertsIcon.x = 1110;
             this.zeunertsGainerDisplay.x = 750;
+            this.distanceDisplay.x = 1525;
             //Texts           
             this.speedText.x = 1350;
             this.speedTextValue.x = 1364;
@@ -533,7 +549,7 @@ class PlayScene extends Phaser.Scene {
         this.fortitudeButton.setFrame(2);
         this.zeunertsAmmountBank -= this.fortitudeCost;
         this.fortitudeCost = Math.floor(this.fortitudeCost + 10);
-        this.fortitude = Math.floor(this.fortitude * 0.9);
+        this.fortitude = (this.fortitude * 0.9);
         this.updateButtons();
     }
 
