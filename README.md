@@ -1,21 +1,21 @@
-### team : 
+### Team : 
 
 “Ultra Stars”
-### creator : 
+### Creator : 
 
 “Emil Åsbringer”
-### title : 
+### Title : 
 
 “The Zunerts Chronicles”
-### description : 
+### Description : 
 
 ”Hjälp Fiskslukarn Bengtson ta sig till Zunertsfabriken och belöna NTI elever med smasksig julvätska”
-### image : 
+### Image : 
 
 ![image]()
-### url: 
+### Url: 
 
 https://zunertschronicles.netlify.app/
-### git : 
+### Git : 
 
 https://github.com/emilasbringer/phasertilemap
