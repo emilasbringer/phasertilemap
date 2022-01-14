@@ -21,8 +21,6 @@ För att upprepa denna framgång i framtida projekt så ska jag anpassa framtida
 
 ## Negativa erfarenheter
 
-Här beskriver du det som du anser har gått mindre bra med ditt projekt och analyserar hur du kan undvika detta i framtida projekt.
-
 En negativ erfarnehet med min spelutveckling under detta projektets gång var att jag inte tog hänsyn till Phasers begränsningar i planeringsfasen vilket då ledde till ineffektiva programmeringssessioner då jag spenderade mycket tid på att göra något som i princip inte var möjligt eller alldeles för mycket arbete i förhållande med det värde som det gav.
 
 Det jag kan ta med mig från de 
