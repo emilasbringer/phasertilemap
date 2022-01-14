@@ -1,10 +1,9 @@
-# Titel
+# The Zunerts Chronicles
 
-Författare och datum.
+Emil Åsbringer 2022-01-14
 
 ## Inledning
-
-Här beskriver du kortfattat arbetets syfte/mål, arbetssätt, genomförande.
+Detta är ett spel utvecklat i Phaser 3 med syftet att utveckla våra programmeringskunskper, vårat logist tänkade och våran strukturella förståelse av program. Vi började arbetsprocessen genom att gemensamnt brainstorma och komma på intesanta idéer till vårt spel i våran grupp med programmerare och estet-elever kallad Ultra-Stars. Då vi hade det grafiska gränssnittet fastställt och de grundläggande mekanikerna till spelet så började vi programmeringen. Efter några veckor så var spelet klart och vi presenterade våra individuella projekt på julavslutningen.
 
 ## Bakgrund
 
@@ -14,10 +13,10 @@ Använd gärna bilder för att illustrera.
 
 För att lägga till bilder i markdown. Bilderna kan du ladda upp med Git som vanligt, länka dem med url eller filnamnet.
 
-```
+
 ![GitHub Logo](/images/logo.png)
 Format: ![Alt Text](url)
-```
+
 
 ![NTI Gymnasiet Umeå Logo](https://raw.githubusercontent.com/jensnti/Webbprojekt/master/mallar/nti_logo_white_umea.svg)
 
