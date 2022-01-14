@@ -14,7 +14,6 @@ Använd gärna bilder för att illustrera.
 För att lägga till bilder i markdown. Bilderna kan du ladda upp med Git som vanligt, länka dem med url eller filnamnet.
 
 
-![GitHub Logo](/images/logo.png)
 Format: ![Alt Text](url)
 
 
