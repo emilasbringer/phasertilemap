@@ -4,11 +4,15 @@ Emil Åsbringer 2022-01-14
 
 ## Inledning
 
+![titlescreen](https://raw.githubusercontent.com/emilasbringer/phasertilemap/main/PM%20Images/titlescreen.png)
+
 Detta är ett spel utvecklat i Phaser 3 med syftet att utveckla våra programmeringskunskper, vårat logist tänkade och våran strukturella förståelse av program. Vi började arbetsprocessen genom att gemensamnt brainstorma och komma på intesanta idéer till vårt spel i våran grupp med programmerare och estet-elever kallad Ultra-Stars. Då vi hade det grafiska gränssnittet fastställt och de grundläggande mekanikerna till spelet så började vi programmeringen. Efter några veckor så var spelet klart och vi presenterade våra individuella projekt.
 
 ## Bakgrund
 
 Förarbetet till detta projekt bestod av mycket testande av Phaser 3s spelmotor. Vi laddade ner ett antal exempelfiler som tillsammans agerade som en tutorial för själva Phaser 3 spelmotorn. Efter detta så träffade vi våran grupp Ultra-Stars och kom på ett antal idéer och mechanics till vårat spel. Nästa steg var då självaste utvecklingen av spelet, vilket alla programmare i gruppen gjorde individuellt. Då deadlinen var kommen så var det mesta av programmeringen färdig och spelen laddades upp till en hemsida. Efter presentationen så gjorde vi ett post-mortem och analyserade framgångarna och motgångarna under projektets gång.
+
+![game](https://raw.githubusercontent.com/emilasbringer/phasertilemap/main/PM%20Images/game.png)
 
 ## Positiva erfarenheter
 
